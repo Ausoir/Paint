@@ -1,0 +1,64 @@
+[gd_resource type="Theme" load_steps=10 format=2]
+
+[ext_resource path="res://assets/font_ui.tres" type="DynamicFont" id=1]
+[ext_resource path="res://assets/image/scroll.png" type="Texture" id=2]
+[ext_resource path="res://assets/FingerPaint-Regular.ttf" type="DynamicFontData" id=3]
+[ext_resource path="res://assets/image/scroll_grabber.png" type="Texture" id=4]
+
+[sub_resource type="DynamicFont" id=13]
+size = 20
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+extra_spacing_char = -2
+font_data = ExtResource( 3 )
+
+[sub_resource type="DynamicFont" id=12]
+outline_color = Color( 0, 0, 0, 1 )
+extra_spacing_char = -2
+font_data = ExtResource( 3 )
+
+[sub_resource type="StyleBoxTexture" id=3]
+content_margin_left = 2.0
+content_margin_right = 2.0
+content_margin_top = 2.0
+content_margin_bottom = 2.0
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 4, 4 )
+margin_left = 2.0
+margin_right = 2.0
+margin_top = 2.0
+margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id=10]
+content_margin_left = 0.0
+content_margin_right = 0.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 8, 8 )
+margin_left = 6.0
+margin_right = 6.0
+margin_top = 6.0
+margin_bottom = 6.0
+
+[sub_resource type="StyleBoxTexture" id=11]
+content_margin_left = 0.0
+content_margin_right = 0.0
+content_margin_top = 0.0
+content_margin_bottom = 0.0
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 8, 8 )
+margin_left = 6.0
+margin_right = 6.0
+margin_top = 6.0
+margin_bottom = 6.0
+
+[resource]
+Label/fonts/font = SubResource( 13 )
+RichTextLabel/fonts/bold_font = ExtResource( 1 )
+RichTextLabel/fonts/normal_font = SubResource( 12 )
+VScrollBar/styles/grabber = SubResource( 3 )
+VScrollBar/styles/grabber_highlight = SubResource( 3 )
+VScrollBar/styles/grabber_pressed = SubResource( 3 )
+VScrollBar/styles/scroll = SubResource( 10 )
+VScrollBar/styles/scroll_focus = SubResource( 11 )

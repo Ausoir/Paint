@@ -1,0 +1,2 @@
+{"map":"city","money":0,"seed":-1,"time":1}
+{"id":1,"position":[4,2],"unit":"slime","unit_data":{"damage":0,"img":"slime","move speed":8,"seed":-1,"size":0,"deck":["block","block","rage","bash","double bash"],"vitality":8}}

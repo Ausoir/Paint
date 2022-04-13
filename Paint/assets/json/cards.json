@@ -1,0 +1,38 @@
+{
+	"rage": {
+		"type": "self",
+		"onstart": [["sfx","bash"],["gfx","Hit"],["attack",2],["defense",-2]],
+		"desc": "Gain 2 attack but lose 2 defense.",
+	},
+	"double bash": {
+		"type": "target",
+		"onstart": [["sfx","bash"],["gfx","Hit"],["sfx","bash"],["gfx","Hit"],["bash",3],["bash",3]],
+		"desc": "Bash for [color=red]3[/color], 2 times.",
+	},
+	"bash": {
+		"type": "target",
+		"onstart": [["sfx","bash"],["gfx","Hit"],["bash",3]],
+		"desc": "Bash for [color=red]3[/color].",
+	},
+	"peck": {
+		"type": "target",
+		"onstart": [["sfx","bash"],["cut",5]],
+		"desc": "Cut for [color=red]5[/color].",
+	},
+	"smite": {
+		"type": "target",
+		"onstart": [["sfx","bash"],["burn",2]],
+		"onkill": [["attack",1],["defense",1]],
+		"desc": "Burn for [color=red]2[/color].\nGain attack and defense on kill.",
+	},
+	"block": {
+		"type": "self",
+		"onstart": [["sfx","block"],["block",3]],
+		"desc": "Block for [color=gray]3[/color].",
+	},
+	"filler": {
+		"img": "grass",
+		"onstart": [["attack",2]],
+		"desc": "Filler.",
+	},
+}

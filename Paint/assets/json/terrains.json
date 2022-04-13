@@ -1,0 +1,6 @@
+{
+	"void": {"col": 15},
+	"dirt": {"col": 0},
+	"grass": {"col": 0},
+	"wall": {"col": 15, "autotile": 1},
+}
