@@ -20,18 +20,31 @@ var turn = -1
 var stamina = 3
 var target = null
 var state = 0
+var deaths = []
 
 func _ready():
 	rect_size = G.ui.screen_size
+	cmd.battle = self
 	G.world.turn.lockdown(0)
 	G.factory.make_cardunit(n_player, G.you.unit.item_name)
 	var mhp = G.you.unit.dat.g("vitality", 1)
 	n_player.battle = self
 	n_player.unit = G.you.unit
-	n_player.damage("true", mhp - G.you.unit.dat.g("health", mhp))
+	n_player.damage("true", mhp - G.you.unit.dat.g("health", mhp), null)
 	n_player.set_deck(G.you.unit.dat.g("deck"))
 	n_player.deck.shuffle()
+	set_weapon(n_player.unit.dat.g("weapon"))
 	draw()
+
+func set_weapon(p):
+	if n_player.next != null and n_player.next.get_parent() == n_player:
+		n_player.next.queue_free()
+		n_player.remove_child(n_player.next)
+	n_player.unit.dat.a("weapon", p)
+	var wpn = p
+	if wpn != null:
+		n_player.set_next(G.factory.make_card(null, wpn))
+		n_player.next.connect("gui_input", self, "_on_gui_input", [-1])
 
 func add_enemy(enemy):
 	var new = G.factory.make_cardunit(null, enemy.item_name)
@@ -58,6 +71,8 @@ func _unhandled_input(event):
 			deal(2)
 		elif Input.is_action_just_pressed("deal4"):
 			deal(3)
+		elif Input.is_action_just_pressed("weapon"):
+			deal(-1)
 
 func add_stamina(p):
 	stamina += p
@@ -71,7 +86,6 @@ func draw():
 			if n_player.deck.size() == 0:
 				shuffle()
 			var node = n_hand.get_child(finger)
-			node.modulate = Color.white
 			hand[finger] = n_player.deck.pop_front()
 			G.factory.make_card(node, hand[finger])
 			node.recall()
@@ -93,7 +107,7 @@ func verify_state():
 	else:
 		for enemy in n_enemy.get_children():
 			if enemy.health <= 0:
-				enemy.unit.die()
+				deaths.append(enemy.unit)
 				enemy.queue_free()
 				n_enemy.remove_child(enemy)
 		var enemy_num = n_enemy.get_child_count()
@@ -120,20 +134,28 @@ func on_turn():
 		if turn >= 0:
 			dealt(turn)
 			turn -= 1
+			if turn == -1:
+				n_player.on_turn()
 		elif turn == -1 and stamina <= 0:
 			stamina = 3
 			add_stamina(0)
 			turn = n_enemy.get_child_count() - 1
-			n_player.on_turn()
 			n_timer.start(.5)
 
 func deal(p):
-	if turn == -1 and stamina > 0 and hand[p] != null:
-		var node = get_node("Hand/" + str(p))
-		var to = target.rect_global_position
-		if node.dat.g("type") == "target":
+	if turn == -1 and stamina > 0:# and !tween.is_active():
+		var node
+		if p == -1:
+			node = n_player.next
+		elif hand[p] == null:
+			return
+		else:
+			node = get_node("Hand/" + str(p))
+			discard.append(hand[p])
+			hand[p] = null
+		if node.dat.g("type") > 1:
 			tween.interpolate_property(node, "rect_global_position",
-				node.rect_global_position, to, .3,
+				node.rect_global_position, target.rect_global_position, .3,
 				Tween.TRANS_EXPO, Tween.EASE_OUT)
 			tween.interpolate_property(node, "rect_rotation",
 				node.rect_rotation, 360, .4,
@@ -142,10 +164,8 @@ func deal(p):
 			Color(1,1,1,1), Color(1,1,1,0), .4,
 			Tween.TRANS_EXPO, Tween.EASE_OUT)
 		tween.start()
-		discard.append(hand[p])
-		hand[p] = null
 		add_stamina(-1)
-		run(node.dat.g("onstart"), n_player, target)
+		run_action(node, n_player, target)
 
 func dealt(p):
 	var enemy = n_enemy.get_child(p)
@@ -157,10 +177,13 @@ func dealt(p):
 		Color(1,1,1,1), Color(1,1,1,0), .4,
 		Tween.TRANS_EXPO, Tween.EASE_OUT)
 	tween.start()
-	run(next.dat.g("onstart"), enemy, n_player)
+	run_action(next, enemy, n_player)
+	enemy.set_next()
 	n_timer.start(.5)
 
 func win():
+	n_timer.queue_free()
+	tween.stop_all()
 	state = TRANSITION
 	turn = -2
 	G.you.unit.dat.a("health", n_player.health)
@@ -176,6 +199,8 @@ func win():
 	tween.start()
 
 func defeat():
+	n_timer.queue_free()
+	tween.stop_all()
 	state = TRANSITION
 	turn = -2
 	for child in n_hand.get_children():
@@ -190,10 +215,34 @@ func defeat():
 			Tween.TRANS_SINE, Tween.EASE_IN)
 	tween.start()
 
-func run(p, host, to):
-	if p != null:
-		cmd.run(p, host, to)
-		verify_state()
+func run_action(node, host, to):
+	host.last = node
+	var query = node.dat.g("onstart")
+	var targets = get_targets(node.dat.g("type"), host, to)
+	for i in targets:
+		run(query, host, i)
+	var onend = node.dat.g("onend")
+	for i in targets:
+		call_deferred("run", onend, host, i)
+
+func run(query, host, to):
+	if query != null:
+		cmd.run(query, host, to)
+	verify_state()
+
+func get_targets(type, host, to):
+	var targets = []
+	if type == 1:
+		targets.append(host)
+	elif type == 2:
+		targets.append(to)
+	elif type == 3:
+		if host == n_player:
+			for i in n_enemy.get_children():
+				targets.append(i)
+		else:
+			targets.append(to)
+	return targets
 
 func clear():
 	for i in get_children():
@@ -202,12 +251,15 @@ func clear():
 	G.ui.battle = null
 	G.ui.clear()
 	G.world.turn.lockdown(-1)
+	for i in deaths:
+		i.die()
 
 func _process(_delta):
-	if target != null:
+	if target != null and state == 0:
 		var point_to = target.rect_global_position
 		n_pointer.global_position.x += ((point_to.x + 80) - n_pointer.global_position.x)/12
 		n_pointer.global_position.y += ((point_to.y + 240) - n_pointer.global_position.y)/12
 
 func _on_timer():
+	tween.stop_all()
 	on_turn()

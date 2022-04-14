@@ -8,6 +8,7 @@ var battle
 var deck
 var unit
 var next
+var last
 
 func on_draw():
 	pass
@@ -34,14 +35,19 @@ func change(variable, p):
 func set_deck(p):
 	deck = p.duplicate()
 
-func set_next():
-	var skill = G.factory.make_card(null, deck.pop_front())
-	next = skill
+func set_next(p=null):
+	if p == null:
+		if deck.empty():
+			set_deck(unit.dat.g("deck"))
+		p = G.factory.make_card(null, deck.pop_front())
+	next = p
 	next.rect_position.x = 160
 	next.set_rotation_degrees(5)
-	add_child(skill)
+	next.rect_pivot_offset.y = 240
+	add_child(next)
+	return next
 
-func damage(type, p):
+func damage(type, p, hitter):
 	var dmg = p
 	if type == "bash":
 		dmg = max(0, p - block)
@@ -51,6 +57,8 @@ func damage(type, p):
 			dmg = 0
 	health -= dmg
 	if health <= 0:
+		if hitter != null:
+			battle.run(hitter.last.dat.g("onkill"), hitter, self)
 		battle.run(unit.dat.g("onlethal"), self, self)
 	set_text(text)
 

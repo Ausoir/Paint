@@ -17,6 +17,7 @@ var controller
 var cooldowns = {}
 var buffs = Buffs.new(self)
 var current_action = ""
+var weapon_name: String
 
 func _ready():
 	n_collider = get_node("Body")
@@ -30,8 +31,8 @@ func set_texture(p):
 	var y = img_size.y
 	var x2 = img_size.x/2
 	var y2 = img_size.y/2
-	if img_size.y > G.H:
-		r_sprite.offset.y = -int(img_size.y) + 16
+	r_sprite.offset.x = -int(img_size.x) / 2
+	r_sprite.offset.y = -int(img_size.y) + 16
 	var uv = PoolVector2Array([
 		Vector2(0,0),Vector2(x2,0),Vector2(x,0),Vector2(x,y2),
 		Vector2(x,y),Vector2(x2,y),Vector2(0,y),Vector2(0,y2)

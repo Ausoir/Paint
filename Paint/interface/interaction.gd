@@ -1,6 +1,7 @@
 var tgt
 var ignore = false
 var stop = false
+var battle
 
 func run(args, host, ptgt):
 	if ptgt != null:
@@ -49,7 +50,7 @@ func replace_dats(host, arg):
 	return arg
 
 func run_command(p, host):
-	var args = p
+	var args = replace_vars(host, p)
 	var command = args[0]
 	if command[0] == "?":
 		if command == "?=":
@@ -67,21 +68,26 @@ func run_command(p, host):
 		return run_operation(command, args, G.vars, tgt)
 	elif command[0] == "&":
 		return run_operation(command, args, G.temp, tgt)
-	elif command == "make":
-		tgt = G.factory.make_unit(args[1], args[2])
+	elif command == "cmd":
+		G.cmds(args[1], host.unit)
 	elif command == "sfx":
 		G.sfx.play(args[1])
-	elif command == "block":
-		host.change("block", args[1] + host.defense)
-	elif command == "defense" or command == "attack":
-		host.change(command, args[1])
 	elif command == "gfx":
 		tgt.gfx(args[1])
-	elif tgt.health > 0:
-		if command == "burn":
-			tgt.damage("true", args[1])
-		elif command == "cut" or command == "bash":
-			tgt.damage(command, args[1] + host.attack)
+	elif command == "weapon":
+		if host.unit == G.you.unit:
+			battle.set_weapon(args[1])
+	else:
+		var subject = args[1]
+		if subject.health > 0:
+			if command == "burn":
+				subject.damage("true", args[2], host)
+			elif command == "cut" or command == "bash":
+				subject.damage(command, args[2] + host.attack, host)
+			elif command == "block":
+				subject.change("block", args[2] + host.defense)
+			elif command == "defense" or command == "attack":
+				subject.change(command, args[2])
 	return tgt
 
 func run_operation(command, args, dict, _tgt):
@@ -99,3 +105,49 @@ func run_operation(command, args, dict, _tgt):
 		elif command[1] == "*" and command[2] == "=":
 			dict[args[1]] *= args[2]
 	return _tgt
+
+func replace_vars(host, _args):
+	var r = []
+	for arg in _args:
+		if arg is Array:
+			arg = replace_vars(host, arg)
+		elif arg is String:
+			var s = len(arg)
+			if s >= 2:
+				if arg[0] == "$":
+					var unit
+					if arg[1] == "t":
+						unit = tgt
+					elif arg[1] == "h":
+						unit = host
+					elif arg[1] == "$":
+						r.append(arg.substr(1))
+						continue
+					elif arg[1] == "p":
+						unit = G.you.unit
+					if unit == null:
+						r.append(null)
+						continue
+					if s >= 3:
+						if arg[2] == "p":
+							r.append(unit.pos)
+						elif arg[2] == "v":
+							r.append(unit.position)
+						elif arg[2] == "a":
+							var adjs = unit.pos.get_available_adjacents("0011")
+							var adj = R.r_arr(adjs)
+							if adj == null:
+								r.append(unit.pos)
+							else:
+								r.append(adj)
+						elif arg[2] == "c":
+							r.append(unit.controller)
+						elif arg[2] == "h":
+							r.append(unit.host)
+					else:
+						r.append(unit)
+					continue
+				else:
+					arg = replace_dats(host, arg)
+		r.append(arg)
+	return r

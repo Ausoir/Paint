@@ -174,6 +174,18 @@ tracks/13/keys = {
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( -8, 0 ) ]
 }
+tracks/14/type = "value"
+tracks/14/path = NodePath(".:modulate")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
 
 [sub_resource type="Animation" id=2]
 resource_name = "Die2"
@@ -334,6 +346,18 @@ tracks/12/keys = {
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( -8, 0 ) ]
 }
+tracks/13/type = "value"
+tracks/13/path = NodePath(".:modulate")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
 
 [sub_resource type="Animation" id=3]
 resource_name = "Die3"
@@ -482,8 +506,21 @@ tracks/11/keys = {
 "update": 0,
 "values": [ Vector2( 0, 0 ), Vector2( 0, 4 ) ]
 }
+tracks/12/type = "value"
+tracks/12/path = NodePath(".:modulate")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/keys = {
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 1 ), Color( 1, 1, 1, 0 ) ]
+}
 
 [node name="Node2D" type="Node2D"]
+modulate = Color( 1, 1, 1, 0 )
 script = ExtResource( 2 )
 
 [node name="Part1" type="Polygon2D" parent="."]

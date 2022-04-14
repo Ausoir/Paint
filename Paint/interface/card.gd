@@ -35,6 +35,7 @@ func remember():
 func recall():
 	rect_position = orig_pos
 	rect_rotation = orig_rot
+	modulate = Color.white
 
 func gfx(p):
 	var fx = G.data.get_particle(p)
