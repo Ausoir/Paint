@@ -43,11 +43,14 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-margin_left = -300.0
+margin_left = -160.0
 margin_top = -240.0
-margin_right = 300.0
+margin_right = 440.0
 rect_min_size = Vector2( 600, 240 )
 size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="0" parent="Hand" instance=ExtResource( 1 )]
 margin_right = 140.0

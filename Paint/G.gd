@@ -1,9 +1,9 @@
 extends Node
 
-const W = 64
-const H = 64
-const HW = 32
-const HH = 32
+const W = 32
+const H = 32
+const HW = 16
+const HH = 16
 const OCTANT_FLIP = [[1, 0, 0, 1], [0, 1, 1, 0], [0, -1, 1, 0], [-1, 0, 0, 1], \
 	[-1, 0, 0, -1], [0, -1, -1, 0], [0, 1, -1, 0], [1, 0, 0, -1]]
 const CARDINALS = [[0,-1],[1,0],[0,1],[-1,0]]
@@ -27,6 +27,7 @@ var factory = preload("res://classes/factory.gd").new()
 var world = preload("res://world/World.tscn").instance()
 var ui = preload("res://interface/Interface.tscn").instance()
 var command = load("res://classes/command.gd").new()
+var bcommand = preload("res://interface/interaction.gd").new()
 var events = []
 var vars = {}
 var temp = {}
@@ -38,7 +39,9 @@ func _ready():
 	set_process(false)
 
 func start():
-	get_tree().get_root().add_child(ui)
+	var root = get_tree().get_root()
+	root.add_child(ui)
+	root.add_child(world)
 	set_process(true)
 
 func _process(_delta):
@@ -150,13 +153,6 @@ func cmds(p, host=null, tgt=null):
 	return command.run(p, host, tgt)
 
 func travel(_map):
-	var root = get_tree().get_root()
-	if world.get_parent() != null:
-		root.remove_child(world)
-		world.others.remove_child(sfx)
-	var newworld = load('res://world/World.tscn').instance()
-	root.add_child(newworld)
-	world = newworld
 	world.create(_map)
 	world.others.add_child(sfx)
 	if you.get_parent() != null:

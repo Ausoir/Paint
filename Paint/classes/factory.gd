@@ -50,6 +50,7 @@ func make_unit(arg, pos):
 		r.item_type = "unit"
 		r.dat = Properties.new(unit_data)
 		r.place(pos)
+		G.world.items.add_child(r)
 		G.world.turn.add(r)
 		r.dat.run(r, "onmake")
 		r.possess()
@@ -65,14 +66,16 @@ func make_item(arg, pos=null):
 			if r.texture != null:
 				if !r.region_enabled:
 					var img_size = r.texture.get_size()
-					if img_size.y > 32:
-						r.offset.y = -int((img_size.y - 32) / 2)
+					if img_size.y > G.H:
+						r.offset.y = -int((img_size.y - G.H) / 2)
 		r.set_script(Item)
 		r.item_name = arg
 		r.item_type = "item"
 		r.dat = Properties.new(item_data)
+		r.set_col(r.dat.g("col", 0))
 		if pos != null:
 			r.place(pos)
+		G.world.items.add_child(r)
 		if r.dat.g("onturn") != null:
 			G.world.turn.add(r)
 		r.dat.run(r, "onmake")
@@ -94,6 +97,5 @@ func make_corpse(host, pos):
 		r.dat = G.factory.Properties.new(item_data)
 	if pos != null:
 		r.place(pos)
-	r.modulate = Color.indianred
 	G.world.turn.add(r)
 	return r

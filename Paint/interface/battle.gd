@@ -10,7 +10,6 @@ onready var n_hand = $Hand
 onready var n_stamina = $Stamina
 onready var n_pointer = $Pointer
 onready var n_timer = $Timer
-var cmd = preload("res://interface/interaction.gd").new()
 var discard = []
 var forgot
 var hand = [null, null, null, null]
@@ -24,8 +23,8 @@ var deaths = []
 
 func _ready():
 	rect_size = G.ui.screen_size
-	cmd.battle = self
-	G.world.turn.lockdown(0)
+	G.bcommand.battle = self
+	G.world.turn.lockdown(4)
 	G.factory.make_cardunit(n_player, G.you.unit.item_name)
 	var mhp = G.you.unit.dat.g("vitality", 1)
 	n_player.battle = self
@@ -110,6 +109,9 @@ func verify_state():
 				deaths.append(enemy.unit)
 				enemy.queue_free()
 				n_enemy.remove_child(enemy)
+		for i in deaths:
+			i.die()
+		deaths.clear()
 		var enemy_num = n_enemy.get_child_count()
 		if enemy_num == 0:
 			state = VICTORY
@@ -131,6 +133,7 @@ func _on_tween_all_completed():
 func on_turn():
 	if state == 0:
 		G.world.turn.lockdown(8)
+		turn = min(turn, n_enemy.get_child_count() - 1)
 		if turn >= 0:
 			dealt(turn)
 			turn -= 1
@@ -139,7 +142,7 @@ func on_turn():
 		elif turn == -1 and stamina <= 0:
 			stamina = 3
 			add_stamina(0)
-			turn = n_enemy.get_child_count() - 1
+			turn = 99
 			n_timer.start(.5)
 
 func deal(p):
@@ -221,13 +224,9 @@ func run_action(node, host, to):
 	var targets = get_targets(node.dat.g("type"), host, to)
 	for i in targets:
 		run(query, host, i)
-	var onend = node.dat.g("onend")
-	for i in targets:
-		call_deferred("run", onend, host, i)
 
 func run(query, host, to):
-	if query != null:
-		cmd.run(query, host, to)
+	G.bcommand.run(query, host, to)
 	verify_state()
 
 func get_targets(type, host, to):
@@ -251,8 +250,6 @@ func clear():
 	G.ui.battle = null
 	G.ui.clear()
 	G.world.turn.lockdown(-1)
-	for i in deaths:
-		i.die()
 
 func _process(_delta):
 	if target != null and state == 0:

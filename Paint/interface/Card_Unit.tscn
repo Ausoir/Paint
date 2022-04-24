@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/image/card2.png" type="Texture" id=1]
 [ext_resource path="res://interface/card_unit.gd" type="Script" id=2]
-[ext_resource path="res://assets/image/slime.png" type="Texture" id=3]
+[ext_resource path="res://assets/image/unit/cup.png" type="Texture" id=3]
 
 [node name="Node2D" type="Container"]
 margin_right = 160.0

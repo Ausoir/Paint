@@ -1,5 +1,3 @@
-const COL_BITS = [1,2,4,8]
-
 var item_type = "tile"
 var x
 var y
@@ -30,35 +28,34 @@ func to_array():
 func to_string():
 	return str(x) + "," + str(y)
 
-func set_terrain(val):
-	var data = G.data.terrain_data.get(val)
-	if data != null:
-		terrain = val
-		if "autotile" in data:
-			autotile = data.autotile
-		slow = data.get("slow", 1)
-		var tile_image = world.tileset.find_tile_by_name(val)
-		world.tilemap.set_cell(x, y, tile_image)
-		dat = data
-		dat.col = int(dat.col)
-		col = dat.col
-	else:
-		push_error("Could not find terrain data " + val)
+func set_visible(p):
+	if visible != p:
+		if p:
+			for item in items:
+				item.show()
+		else:
+			for item in items:
+				item.hide()
+		visible = p
+		return true
+	return false
 
 func add_item(item):
-	if item.get_parent() == null:
-		world.items.add_child(item)
 	if item.layer < 0:
 		items.insert(0, item)
 	else:
 		items.append(item)
 	item.set_z_index(y - 4000)
 	item.pos = self
+	col = item.col
+	if visible:
+		item.show()
+	else:
+		item.hide()
 
 func remove_item(item):
-	if item.get_parent() == world.items:
-		world.items.remove_child(item)
 	items.erase(item)
+	col = 0
 
 func is_col(bit):
 	return col & bit > 0
@@ -119,7 +116,7 @@ func is_edge():
 func get_rand_offset(_x, _y):
 	var rx = R.ir(-_x, _x)
 	var ry = R.ir(-_y, _y)
-	return world.fit_bound(x + rx, y + ry)
+	return world.tiles[clamp(y+ry, 0, world.height-1)][clamp(x+rx, 0, world.width-1)]
 
 func get_beam_to(dest, col_mask, distance=-1):
 	var diffx = dest.x - x

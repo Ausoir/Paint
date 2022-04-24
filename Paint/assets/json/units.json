@@ -1,6 +1,24 @@
 {
-	"tiny slime": {
-		"img": "slime_tiny",
+	"cup": {
+		"img": "unit/cup",
+		"move speed": 5,
+		"vitality": 8,
+		"perception": 8,
+		"stamina": 2,
+		"deck": ["bash", "bash", "regenerate"],
+		"desc": "Splits on death.",
+	},
+	"laptop": {
+		"img": "unit/laptop",
+		"move speed": 5,
+		"vitality": 8,
+		"perception": 8,
+		"stamina": 2,
+		"deck": ["bash", "bash", "regenerate"],
+		"desc": "Splits on death.",
+	},
+	"tiny pudding": {
+		"img": "unit/pudding_tiny",
 		"move speed": 4,
 		"vitality": 6,
 		"perception": 6,
@@ -8,19 +26,18 @@
 		"deck": ["bash"],
 		"desc": "Splits on death.",
 	},
-	"slime": {
-		"img": "slime",
+	"pudding": {
+		"img": "unit/pudding",
 		"move speed": 6,
 		"vitality": 8,
 		"perception": 6,
 		"stamina": 2,
 		"deck": ["bash", "bash", "regenerate"],
-		"ondie": [["make","tiny slime","$hp"]],
-		"onlethal": [["cmd", [["make","tiny slime","$$hp"],["menu","battle","$$t"]]]],
+		"onlethal": [["cmd", [["make","tiny pudding","$$hp"],["menu","battle","$$t"]]]],
 		"desc": "Splits on death.",
 	},
 	"skeleton": {
-		"img": "skeleton",
+		"img": "unit/skeleton",
 		"move speed": 9,
 		"vitality": 20,
 		"perception": 8,
@@ -30,7 +47,7 @@
 		"desc": "[b]Undead[/b]: Immune to cut damage but take double smite damage. Cannot be healed.",
 	},
 	"corpse": {
-		"turn": 32,
+		"turn": 64,
 		"onturn": [["remove","$h"]],
 	},
 }

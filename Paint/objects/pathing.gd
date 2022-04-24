@@ -1,7 +1,7 @@
 var world
 var target
-var iterations = 18
-var pathing_times = 3
+var iterations = 24
+var pathing_times = 5
 var open
 var closed = []
 var closest

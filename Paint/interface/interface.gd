@@ -62,10 +62,13 @@ func display_battle(arg):
 	on = true
 	tint.set_size(screen_size)
 	tint.show()
+	arg.is_engaged = true
 	if battle == null:
 		battle = Battle.instance()
 		$Control.add_child_below_node(menu, battle)
-	battle.add_enemy(arg)
+		battle.add_enemy(arg)
+	elif battle.state == 0:
+		battle.add_enemy(arg)
 
 func clear():
 	if battle == null:

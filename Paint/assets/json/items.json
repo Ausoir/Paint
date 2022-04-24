@@ -1,0 +1,14 @@
+{
+	"fog": {
+		"img": "blank",
+		"col": 1,
+	},
+	"wall": {
+		"img": "blank",
+		"col": 15,
+	},
+	"water": {
+		"img": "blank",
+		"col": 12,
+	},
+}

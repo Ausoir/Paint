@@ -2,15 +2,17 @@ var json_cache = {}
 var images_cache = {}
 var sounds_cache = {}
 var particles_cache = {}
-var terrain_data
+var item_data
 var unit_data
 var card_data
+var level_data
 var dialog_data
 
 func _init():
-	terrain_data = get_json_from_dir("res://assets/json/terrains.json")
+	item_data = get_json_from_dir("res://assets/json/items.json")
 	unit_data = get_json_from_dir("res://assets/json/units.json")
 	card_data = get_json_from_dir("res://assets/json/cards.json")
+	level_data = get_json_from_dir("res://assets/json/levels.json")
 	dialog_data = get_json_from_dir("res://assets/json/dialog.json")
 
 func get_combo(dat):
@@ -41,7 +43,7 @@ func set_sprite_texture(sprite, p, autotile):
 	sprite.texture = get_image(p)
 	if autotile != 0:
 		sprite.set_region(true)
-		sprite.set_region_rect(Rect2(0, 0, 32, 32))
+		sprite.set_region_rect(Rect2(0, 0, G.W, G.H))
 
 func get_sound(p):
 	var r = sounds_cache.get(p)

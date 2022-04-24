@@ -20,9 +20,8 @@ var current_action = ""
 var weapon_name: String
 
 func _ready():
-	n_collider = get_node("Body")
+	n_collider = $Body
 	n_collider.parent = self
-	possess()
 
 func set_texture(p):
 	var r_sprite = get_node("Sprites/Sprite")
@@ -31,8 +30,9 @@ func set_texture(p):
 	var y = img_size.y
 	var x2 = img_size.x/2
 	var y2 = img_size.y/2
-	r_sprite.offset.x = -int(img_size.x) / 2
-	r_sprite.offset.y = -int(img_size.y) + 16
+	$Body/CollisionShape2D.shape.radius = x2/2
+	r_sprite.offset.x = -int(img_size.x / 2)
+	r_sprite.offset.y = -int(img_size.y) + G.HH
 	var uv = PoolVector2Array([
 		Vector2(0,0),Vector2(x2,0),Vector2(x,0),Vector2(x,y2),
 		Vector2(x,y),Vector2(x2,y),Vector2(0,y),Vector2(0,y2)
@@ -57,10 +57,6 @@ func reposition(p):
 	position = p
 	on_slide()
 
-func place(p):
-	.place(p)
-	n_collider.check_overlap()
-
 func slide(toward):
 	var ms = dat.g("move speed", 0)
 	if ms > 0:
@@ -77,6 +73,11 @@ func slide(toward):
 		n_collider.vel.x += vx * ms
 		n_collider.vel.y += vy * ms
 	return on_slide()
+
+func place(p):
+	.place(p)
+	if n_collider != null:
+		n_collider.check_overlap()
 
 func on_slide():
 	var newpos = pos.world.from_vec(position)

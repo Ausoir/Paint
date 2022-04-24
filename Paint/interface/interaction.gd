@@ -4,17 +4,18 @@ var stop = false
 var battle
 
 func run(args, host, ptgt):
-	if ptgt != null:
-		tgt = ptgt
-	for arg in args:
-		if stop:
-			stop = false
-			return tgt
-		elif ignore:
-			ignore = false
-		else:
-			tgt = run_command(arg, host)
-	return tgt
+	if args != null:
+		if ptgt != null:
+			tgt = ptgt
+		for arg in args:
+			if stop:
+				stop = false
+				return tgt
+			elif ignore:
+				ignore = false
+			else:
+				tgt = run_command(arg, host)
+		return tgt
 
 func replace_dats(host, arg):
 	var last = arg.find("}")

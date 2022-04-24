@@ -1,16 +1,10 @@
 extends "res://objects/controller.gd"
 
-var reach = 1
-var turn_delay = 0
-
 func on_turn():
-	turn_delay += 1
-	if turn_delay > 3:
-		turn_delay = 0
-		if target == null:
-			perceive()
-		if !hunt():
-			think()
+	if target == null:
+		perceive()
+	if !hunt():
+		think()
 	.on_turn()
 
 func think():

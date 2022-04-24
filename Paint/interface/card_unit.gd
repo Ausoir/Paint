@@ -58,8 +58,8 @@ func damage(type, p, hitter):
 	health -= dmg
 	if health <= 0:
 		if hitter != null:
-			battle.run(hitter.last.dat.g("onkill"), hitter, self)
-		battle.run(unit.dat.g("onlethal"), self, self)
+			G.bcommand.run(hitter.last.dat.g("onkill"), hitter, self)
+		G.bcommand.run(unit.dat.g("onlethal"), self, self)
 	set_text(text)
 
 func die():

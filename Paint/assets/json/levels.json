@@ -1,0 +1,12 @@
+{
+	"Begin": [
+		["pudding", 75],
+		["laptop", 50, "/", ["skeleton", 75]],
+		["skeleton", 75],
+	],
+	"Room": [
+		["pudding", 75],
+		["laptop", 50, "/", ["skeleton", 75]],
+		["skeleton", 75],
+	],
+}

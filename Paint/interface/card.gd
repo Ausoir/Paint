@@ -50,6 +50,7 @@ func _on_mouse_entered():
 			Vector2(1, 1), Vector2(1.2, 1.2), .5,
 			Tween.TRANS_ELASTIC, Tween.EASE_OUT)
 		tween.start()
+		$Sprite.z_index = 2
 
 func _on_mouse_exited():
 	if mouse_over:
@@ -57,6 +58,7 @@ func _on_mouse_exited():
 		mouse_over = false
 		rect_scale = Vector2(1, 1)
 		G.ui.description.hide()
+		$Sprite.z_index = 0
 
 func _on_gui_input(event):
 	if event is InputEventMouseButton:

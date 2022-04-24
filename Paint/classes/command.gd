@@ -124,7 +124,9 @@ func run_command(p, host):
 	elif command == "onstop":
 		onstop = args[1]
 	elif command == "make":
-		tgt = G.factory.make_unit(args[1], args[2])
+		tgt = G.factory.make_item(args[1], args[2])
+		if tgt == null:
+			tgt = G.factory.make_unit(args[1], args[2])
 	elif command == "menu":
 		if args[1] == "msg":
 			G.msg(args[2])

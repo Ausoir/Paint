@@ -5,6 +5,12 @@ onready var n_cursor = $Cursor
 
 var p_id: int
 var p_name: String
+var last_pos
+
+func on_assign():
+	.on_assign()
+	last_pos = unit.pos
+	$Camera/Area2D/CollisionShape2D.shape.radius = unit.get_node("Body/CollisionShape2D").shape.radius + G.HW
 
 func _on_input(event: InputEvent):
 	if event is InputEventMouseMotion:
@@ -15,10 +21,10 @@ func _on_input(event: InputEvent):
 		if event.pressed:
 			if event.button_index == BUTTON_WHEEL_UP:
 				if n_camera.zoom.x > .5:
-					n_camera.zoom *= .8
+					n_camera.zoom *= .9
 			elif event.button_index == BUTTON_WHEEL_DOWN:
-				if n_camera.zoom.x < 2:
-					n_camera.zoom *= 1.2
+				if n_camera.zoom.x < .5 + (unit.dat.g("perception", 8) * .05):
+					n_camera.zoom *= 1.1
 			elif event.button_index == BUTTON_MIDDLE: #Teleport to cursor
 				pass
 			elif Input.is_action_just_pressed("move"):
@@ -35,7 +41,7 @@ func get_cursor_position(mouse):
 
 func _physics_process(_delta):
 	n_camera.position = unit.n_collider.global_position
-	if unit.delay == 0:
+	if unit.delay == 0 and !G.ui.on:
 		var dir = -1
 		if Input.is_action_pressed("move_up"):
 			if Input.is_action_pressed("move_left"):
@@ -65,7 +71,6 @@ func _on_collision(body):
 		if body != unit.n_collider and body is KinematicBody2D:
 			var node = body.get_parent()
 			if node.item_type == "unit" and !node.is_engaged:
-				node.is_engaged = true
 				G.cmds([["menu", "battle", node]])
 
 func on_item_click(item): #runs after _unhandled_input
@@ -109,5 +114,5 @@ func save_data():
 func load_data(_data):
 	var player_pos = G.world.tiles[_data.position[1]][_data.position[0]]
 	var player_unit = G.cmds([["make", _data.unit, player_pos]])
-	player_unit.possess(self)
 	player_unit.dat.load_data(_data.unit_data)
+	player_unit.possess(self)

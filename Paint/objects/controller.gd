@@ -26,7 +26,7 @@ func perform(task):
 	if task[0] == "path":
 		if task[2] != null and validate_target(task[2]):
 			var exc = [unit.n_collider, target.n_collider]
-			if unit.n_collider.cast_col_ray(task[2].position, exc, 12).empty():
+			if unit.n_collider.cast_col_ray(task[2].position, exc, 8).empty():
 				unit.slide(task[2].position)
 				return false
 		unit.slide(task[1].position)

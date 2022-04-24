@@ -8,3 +8,4 @@ func make(host):
 		var node = get_node("Part" + str(i))
 		node.texture = texture
 	$AnimationPlayer.play("Die" + str(R.ir(1, 3)))
+	modulate = Color.white

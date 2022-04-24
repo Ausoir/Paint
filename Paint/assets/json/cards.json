@@ -1,8 +1,7 @@
 {
 	"sword": {
 		"type": 3,
-		"onstart": [["sfx","bash"],["cut","$t",5]],
-		"onend": [["weapon","sword"]],
+		"onstart": [["sfx","bash"],["cut","$t",5],["weapon","sword"]],
 		"desc": "Cleave for [color=red]5[/color]. Reusable.",
 	},
 
