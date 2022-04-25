@@ -1,4 +1,4 @@
-extends "res://objects/controller.gd"
+extends "res://objects/ai.gd"
 
 onready var n_camera = $Camera
 onready var n_cursor = $Cursor
@@ -23,7 +23,7 @@ func _on_input(event: InputEvent):
 				if n_camera.zoom.x > .5:
 					n_camera.zoom *= .9
 			elif event.button_index == BUTTON_WHEEL_DOWN:
-				if n_camera.zoom.x < .5 + (unit.dat.g("perception", 8) * .05):
+				if n_camera.zoom.x < 1:
 					n_camera.zoom *= 1.1
 			elif event.button_index == BUTTON_MIDDLE: #Teleport to cursor
 				pass

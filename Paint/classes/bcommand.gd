@@ -75,6 +75,8 @@ func run_command(p, host):
 		G.sfx.play(args[1])
 	elif command == "gfx":
 		tgt.gfx(args[1])
+	elif command == "cycle":
+		battle.cycle()
 	elif command == "weapon":
 		if host.unit == G.you.unit:
 			battle.set_weapon(args[1])

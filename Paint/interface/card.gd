@@ -67,3 +67,25 @@ func _on_gui_input(event):
 				G.ui.description.hide()
 			else:
 				G.ui.describe("card", item_name)
+
+func toggle_selection():
+	if dat.g("select", false) == true:
+		on_deselected()
+	else:
+		on_selected()
+
+func on_selected():
+	tween.interpolate_property(self, "rect_rotation",
+		0, 15, 1,
+		Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+	tween.start()
+	$Sprite/Selection.show()
+	dat.a("select", true)
+
+func on_deselected():
+	tween.interpolate_property(self, "rect_rotation",
+		15, 0, 1,
+		Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+	tween.start()
+	$Sprite/Selection.hide()
+	dat.a("select", false)

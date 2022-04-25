@@ -47,6 +47,7 @@
 		"desc": "[b]Undead[/b]: Immune to cut damage but take double smite damage. Cannot be healed.",
 	},
 	"corpse": {
+		"selectable": false,
 		"turn": 64,
 		"onturn": [["remove","$h"]],
 	},

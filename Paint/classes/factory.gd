@@ -1,8 +1,9 @@
 const Item = preload("res://objects/item.gd")
 const Unit = preload("res://objects/Unit.tscn")
 const Card = preload("res://interface/Card.tscn")
-const Card_Unit = preload("res://interface/Card_Unit.tscn")
-const Script_Unit = preload("res://objects/unit.gd")
+const Sprite_Unit = preload("res://assets/image/card2.png")
+const Script_Unit = preload("res://interface/card_unit.gd")
+const Script_Card = preload("res://interface/card.gd")
 const Properties = preload("res://classes/properties.gd")
 
 func make_cardunit(card, arg):
@@ -10,9 +11,11 @@ func make_cardunit(card, arg):
 	if card_data != null:
 		var r
 		if card == null:
-			r = Card_Unit.instance()
+			r = Card.instance()
 		else:
 			r = card
+		r.set_script(Script_Unit)
+		r.get_node("Sprite").texture = Sprite_Unit
 		var sprite = G.data.get_image(card_data.get("img", "blank"))
 		r.set_title(arg)
 		r.health = int(card_data.get("vitality", 1))
@@ -30,6 +33,7 @@ func make_card(card, arg):
 			r = Card.instance()
 		else:
 			r = card
+		r.set_script(Script_Card)
 		var sprite = G.data.get_image(card_data.get("img", "blank"))
 		r.set_title(arg)
 		r.set_text(card_data.get("desc", ""))
@@ -41,7 +45,6 @@ func make_unit(arg, pos):
 	var unit_data = G.data.unit_data.get(arg)
 	if unit_data != null:
 		var r = Unit.instance()
-		r.set_script(Script_Unit)
 		var sprite = G.data.get_image(unit_data.img)
 		if !sprite:
 			return

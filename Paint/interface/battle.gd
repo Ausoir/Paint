@@ -1,7 +1,5 @@
 extends Control
 
-const VICTORY = 1
-const DEFEAT = 2
 const TRANSITION = 3
 onready var tween = $Tween
 onready var n_player = $Player
@@ -17,7 +15,7 @@ var hand_orig_pos = [null,null,null,null]
 var hand_orig_rot = [null,null,null,null]
 var turn = -1
 var stamina = 3
-var target = null
+var target = -1
 var state = 0
 var deaths = []
 
@@ -52,8 +50,7 @@ func add_enemy(enemy):
 	new.set_deck(enemy.dat.g("deck"))
 	new.set_next()
 	n_enemy.add_child(new)
-	if target == null:
-		target = new
+	target = max(target, 0)
 
 func _on_gui_input(event, card):
 	if event is InputEventMouseButton:
@@ -98,10 +95,13 @@ func shuffle():
 		discard = []
 		n_player.deck.shuffle()
 
+func cycle():
+	var max_target = n_enemy.get_child_count()-1
+	target = (target + 1) % max_target
+
 func verify_state():
 	if n_player.health <= 0:
-		state = DEFEAT
-		defeat()
+		set_result(-1)
 		return false
 	else:
 		for enemy in n_enemy.get_children():
@@ -114,11 +114,10 @@ func verify_state():
 		deaths.clear()
 		var enemy_num = n_enemy.get_child_count()
 		if enemy_num == 0:
-			state = VICTORY
-			win()
+			set_result(1)
 			return false
-		elif target.health <= 0:
-			target = n_enemy.get_child(0)
+		elif n_enemy.get_child(target).health <= 0:
+			cycle()
 	return true
 
 func _on_tween_all_completed():
@@ -158,7 +157,7 @@ func deal(p):
 			hand[p] = null
 		if node.dat.g("type") > 1:
 			tween.interpolate_property(node, "rect_global_position",
-				node.rect_global_position, target.rect_global_position, .3,
+				node.rect_global_position, n_enemy.get_child(target).rect_global_position, .3,
 				Tween.TRANS_EXPO, Tween.EASE_OUT)
 			tween.interpolate_property(node, "rect_rotation",
 				node.rect_rotation, 360, .4,
@@ -168,7 +167,7 @@ func deal(p):
 			Tween.TRANS_EXPO, Tween.EASE_OUT)
 		tween.start()
 		add_stamina(-1)
-		run_action(node, n_player, target)
+		run_action(node, n_player, n_enemy.get_child(target))
 
 func dealt(p):
 	var enemy = n_enemy.get_child(p)
@@ -184,38 +183,33 @@ func dealt(p):
 	enemy.set_next()
 	n_timer.start(.5)
 
-func win():
+func set_result(p):
 	n_timer.queue_free()
 	tween.stop_all()
 	state = TRANSITION
 	turn = -2
-	G.you.unit.dat.a("health", n_player.health)
-	tween.interpolate_property(n_player, "rect_scale",
-		n_player.rect_scale, Vector2(4, 4), .5,
-		Tween.TRANS_SINE, Tween.EASE_IN)
-	tween.interpolate_property(n_player, "rect_position",
-		n_player.rect_position, G.ui.screen_size/2, .5,
-		Tween.TRANS_SINE, Tween.EASE_IN)
-	tween.interpolate_property(n_player, "rect_rotation",
-		n_player.rect_rotation, 720, .5,
-		Tween.TRANS_SINE, Tween.EASE_IN)
-	tween.start()
-
-func defeat():
-	n_timer.queue_free()
-	tween.stop_all()
-	state = TRANSITION
-	turn = -2
-	for child in n_hand.get_children():
-		tween.interpolate_property(child, "rect_scale",
-			child.rect_scale, Vector2(.1, .1), 1.5,
-			Tween.TRANS_CIRC, Tween.EASE_IN)
-		tween.interpolate_property(child, "rect_position",
-			child.rect_position, G.ui.screen_size/2, 1.5,
+	if p == 1:
+		G.you.unit.dat.a("health", n_player.health)
+		tween.interpolate_property(n_player, "rect_scale",
+			n_player.rect_scale, Vector2(4, 4), .5,
 			Tween.TRANS_SINE, Tween.EASE_IN)
-		tween.interpolate_property(child, "rect_rotation",
-			child.rect_rotation, -360, 1.5,
+		tween.interpolate_property(n_player, "rect_position",
+			n_player.rect_position, G.ui.screen_size/2, .5,
 			Tween.TRANS_SINE, Tween.EASE_IN)
+		tween.interpolate_property(n_player, "rect_rotation",
+			n_player.rect_rotation, 720, .5,
+			Tween.TRANS_SINE, Tween.EASE_IN)
+	else:
+		for child in n_hand.get_children():
+			tween.interpolate_property(child, "rect_scale",
+				child.rect_scale, Vector2(.1, .1), 1.5,
+				Tween.TRANS_CIRC, Tween.EASE_IN)
+			tween.interpolate_property(child, "rect_position",
+				child.rect_position, G.ui.screen_size/2, 1.5,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+			tween.interpolate_property(child, "rect_rotation",
+				child.rect_rotation, -360, 1.5,
+				Tween.TRANS_SINE, Tween.EASE_IN)
 	tween.start()
 
 func run_action(node, host, to):
@@ -252,8 +246,8 @@ func clear():
 	G.world.turn.lockdown(-1)
 
 func _process(_delta):
-	if target != null and state == 0:
-		var point_to = target.rect_global_position
+	if target != -1 and state == 0:
+		var point_to = n_enemy.get_child(target).rect_global_position
 		n_pointer.global_position.x += ((point_to.x + 80) - n_pointer.global_position.x)/12
 		n_pointer.global_position.y += ((point_to.y + 240) - n_pointer.global_position.y)/12
 

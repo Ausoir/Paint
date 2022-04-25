@@ -131,7 +131,7 @@ func run_command(p, host):
 		if args[1] == "msg":
 			G.msg(args[2])
 		elif args[1] == "menu":
-			G.ui.display_menu()
+			G.ui.display_menu(args[2])
 		elif args[1] == "battle":
 			G.ui.display_battle(args[2])
 		elif args[1] == "dialog":

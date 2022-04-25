@@ -1,7 +1,6 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://interface/Card.tscn" type="PackedScene" id=1]
-[ext_resource path="res://interface/Card_Unit.tscn" type="PackedScene" id=2]
 [ext_resource path="res://interface/battle.gd" type="Script" id=3]
 [ext_resource path="res://assets/FingerPaint-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://assets/image/pointer.png" type="Texture" id=5]
@@ -79,7 +78,7 @@ rect_min_size = Vector2( 140, 240 )
 rect_rotation = 15.0
 rect_pivot_offset = Vector2( 0, 240 )
 
-[node name="Player" parent="." instance=ExtResource( 2 )]
+[node name="Player" parent="." instance=ExtResource( 1 )]
 anchor_top = 1.0
 anchor_bottom = 1.0
 margin_top = -240.0

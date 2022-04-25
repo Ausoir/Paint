@@ -20,12 +20,14 @@ var map_name: String
 
 func create(_map_name):
 	map_name = _map_name
+	G.vars["shop"] = G.data.get_random_cards(6)
+	G.vars["mobs"] = G.data.get_random_units(36)
 	var level = levels.get_node(_map_name)
 	var level_background = level.get_child(0)
 	image.set_texture(level_background.texture)
-	var bounds = level.get_used_rect()
-	width = bounds.size.x
-	height = bounds.size.y
+	var bounds = level_background.get_rect().size
+	width = bounds.x / G.W
+	height = bounds.y / G.H
 	tiles = []
 	var spawns = []
 	var ids = {}
@@ -46,7 +48,6 @@ func create(_map_name):
 	for y in range(height):
 		for x in range(width):
 			apply_autotile(x, y)
-	spawn(spawns)
 
 func spawn(spawns):
 	var ordered = []

@@ -25,6 +25,26 @@ func get_combo(dat):
 		r += get_combo(dat[3])
 	return r
 
+func get_random_units(p):
+	var r = []
+	var keys = unit_data.keys()
+	keys.shuffle()
+	for i in range(p):
+		var key = keys[i % keys.size()]
+		if unit_data[key].get("selectable", true) == true:
+			r.append(key)
+	return r
+
+func get_random_cards(p):
+	var r = []
+	var keys = card_data.keys()
+	keys.shuffle()
+	for i in range(p):
+		var key = keys[i]
+		if card_data[key].get("selectable", true) == true:
+			r.append(key)
+	return r
+
 func get_image(p):
 	var r = images_cache.get(p)
 	if r != null:

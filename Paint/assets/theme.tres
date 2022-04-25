@@ -1,9 +1,22 @@
-[gd_resource type="Theme" load_steps=10 format=2]
+[gd_resource type="Theme" load_steps=16 format=2]
 
 [ext_resource path="res://assets/font_ui.tres" type="DynamicFont" id=1]
 [ext_resource path="res://assets/image/scroll.png" type="Texture" id=2]
 [ext_resource path="res://assets/FingerPaint-Regular.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://assets/image/scroll_grabber.png" type="Texture" id=4]
+[ext_resource path="res://assets/image/button.png" type="Texture" id=5]
+[ext_resource path="res://assets/image/button_hover.png" type="Texture" id=6]
+[ext_resource path="res://assets/font_ui2.tres" type="DynamicFont" id=7]
+
+[sub_resource type="StyleBoxEmpty" id=16]
+
+[sub_resource type="StyleBoxTexture" id=15]
+texture = ExtResource( 5 )
+region_rect = Rect2( 0, 0, 256, 64 )
+
+[sub_resource type="StyleBoxTexture" id=14]
+texture = ExtResource( 6 )
+region_rect = Rect2( 0, 0, 256, 64 )
 
 [sub_resource type="DynamicFont" id=13]
 size = 20
@@ -54,6 +67,12 @@ margin_top = 6.0
 margin_bottom = 6.0
 
 [resource]
+default_font = ExtResource( 7 )
+Button/fonts/font = ExtResource( 1 )
+Button/styles/focus = SubResource( 16 )
+Button/styles/hover = SubResource( 15 )
+Button/styles/normal = SubResource( 15 )
+Button/styles/pressed = SubResource( 14 )
 Label/fonts/font = SubResource( 13 )
 RichTextLabel/fonts/bold_font = ExtResource( 1 )
 RichTextLabel/fonts/normal_font = SubResource( 12 )

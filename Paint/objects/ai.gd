@@ -1,23 +1,25 @@
 extends "res://objects/controller.gd"
 
+var think_delay = 0
+
 func on_turn():
-	if target == null:
-		perceive()
-	if !hunt():
-		think()
+	if think_delay == 0:
+		if target == null:
+			perceive()
+		if !hunt():
+			think()
+	else:
+		think_delay -= 1
+		hunt()
 	.on_turn()
 
 func think():
 	if tasks.empty():
-		var goal = unit.dat.g("goal", "")
-		if goal == "wander":
-			path_to(unit.pos.get_rand_offset(12, 12))
-		elif goal == "kill":
-			target = G.you.unit
+		path_to(unit.pos.get_rand_offset(12, 12))
+		think_delay = R.ir(4, 32)
 
 func perceive():
-	var min_dist = unit.dat.g("perception", 4)
-	var seen = search(min_dist)
+	var seen = search(8)
 	if seen != null:
 		target = seen
 

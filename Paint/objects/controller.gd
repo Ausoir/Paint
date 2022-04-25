@@ -30,7 +30,7 @@ func perform(task):
 				unit.slide(task[2].position)
 				return false
 		unit.slide(task[1].position)
-		return (task[1].position - unit.position).length_squared() < 64
+		return (task[1].position - unit.position).length_squared() < 128
 	elif task[0] == "move":
 		var v = G.DIRS[task[1]]
 		unit.slide(Vector2(unit.position.x+v[0], unit.position.y+v[1]))
