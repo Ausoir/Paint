@@ -45,15 +45,3 @@ func on_turn():
 	if turns > dat.g("turn", 0):
 		dat.run(self, "onturn")
 		turns = 0
-
-func autotilize():
-	var autotile = dat.g("autotile", 0)
-	if autotile != 0:
-		var dirs = []
-		for i in range(4):
-			var adj = pos.get_adjacent(i * 2)
-			var item = adj.get_item_by_name(item_name)
-			if item != null:
-				dirs.append(i)
-		var v = G.get_autotile_coord(dirs)
-		self.region_rect.position = v * G.W

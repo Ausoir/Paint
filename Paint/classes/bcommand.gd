@@ -17,38 +17,16 @@ func run(args, host, ptgt):
 				tgt = run_command(arg, host)
 		return tgt
 
-func replace_dats(host, arg):
-	var last = arg.find("}")
-	if last != -1:
-		var r = ""
-		var v = ""
-		var on = false
-		var once = last == len(arg) - 1 and arg[0] == "{"
-		for i in arg:
-			if i == "{":
-				on = true
-			elif i == "}":
-				var t
-				if "~" in v:
-					var split = v.split("~")
-					t = R.ir(int(split[0]), int(split[1]))
-				elif "," in v:
-					t = R.r_arr(v.split(","))
-				elif v == "t":
-					t = tgt
-				else:
-					t = host.dat.g(v,"")
-				if once:
-					return t
-				r += str(t)
-				v = ""
-				on = false
-			elif on:
-				v += i
-			else:
-				r += i
-		return r
-	return arg
+func replace_dats(v):
+	var t
+	if "~" in v:
+		var split = v.split("~")
+		t = R.ir(int(split[0]), int(split[1]))
+	elif "," in v:
+		t = R.r_arr(v.split(","))
+	elif v == "t":
+		t = tgt
+	return t
 
 func run_command(p, host):
 	var args = replace_vars(host, p)
@@ -151,6 +129,6 @@ func replace_vars(host, _args):
 						r.append(unit)
 					continue
 				else:
-					arg = replace_dats(host, arg)
+					arg = G.replace_vars(arg, funcref(self, "replace_dats"))
 		r.append(arg)
 	return r

@@ -1,7 +1,6 @@
 const Item = preload("res://objects/item.gd")
 const Unit = preload("res://objects/Unit.tscn")
 const Card = preload("res://interface/Card.tscn")
-const Sprite_Unit = preload("res://assets/image/card2.png")
 const Script_Unit = preload("res://interface/card_unit.gd")
 const Script_Card = preload("res://interface/card.gd")
 const Properties = preload("res://classes/properties.gd")
@@ -15,31 +14,33 @@ func make_cardunit(card, arg):
 		else:
 			r = card
 		r.set_script(Script_Unit)
-		r.get_node("Sprite").texture = Sprite_Unit
+		r.get_node("Sprite/Top").modulate = Color.black
 		var sprite = G.data.get_image(card_data.get("img", "blank"))
 		r.set_title(arg)
 		r.health = int(card_data.get("vitality", 1))
-		r.set_text(card_data.get("desc", ""))
 		r.set_image(sprite)
 		r.dat = Properties.new(card_data)
+		r.set_text(card_data.get("desc", ""))
 		return r
 
 func make_card(card, arg):
 	var card_data
 	card_data = G.data.card_data.get(arg)
-	if card_data != null:
-		var r
-		if card == null:
-			r = Card.instance()
-		else:
-			r = card
-		r.set_script(Script_Card)
-		var sprite = G.data.get_image(card_data.get("img", "blank"))
-		r.set_title(arg)
-		r.set_text(card_data.get("desc", ""))
-		r.set_image(sprite)
-		r.dat = Properties.new(card_data)
-		return r
+	if card_data == null:
+		card_data = G.data.card_data.get("dance")
+	var r
+	if card == null:
+		r = Card.instance()
+	else:
+		r = card
+	r.set_script(Script_Card)
+	r.get_node("Sprite/Top").modulate = Color(card_data.get("color", "FFF"))
+	var sprite = G.data.get_image(card_data.get("img", "blank"))
+	r.set_title(arg)
+	r.set_text(card_data.get("desc", ""))
+	r.set_image(sprite)
+	r.dat = Properties.new(card_data)
+	return r
 
 func make_unit(arg, pos):
 	var unit_data = G.data.unit_data.get(arg)

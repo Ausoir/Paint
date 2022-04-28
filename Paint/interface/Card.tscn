@@ -1,10 +1,21 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://assets/image/card1.png" type="Texture" id=1]
+[ext_resource path="res://assets/image/card.png" type="Texture" id=1]
 [ext_resource path="res://assets/image/card_select.png" type="Texture" id=2]
 [ext_resource path="res://assets/image/unit/cup.png" type="Texture" id=3]
+[ext_resource path="res://assets/FingerPaint-Regular.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://assets/image/card_top.png" type="Texture" id=5]
 
-[node name="Node2D" type="Container"]
+[sub_resource type="DynamicFont" id=1]
+size = 32
+outline_size = 2
+outline_color = Color( 0, 0, 0, 0.470588 )
+use_mipmaps = true
+use_filter = true
+extra_spacing_char = -2
+font_data = ExtResource( 4 )
+
+[node name="Node2D" type="Control"]
 margin_right = 160.0
 margin_bottom = 240.0
 rect_min_size = Vector2( 160, 240 )
@@ -15,6 +26,10 @@ __meta__ = {
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
+centered = false
+
+[node name="Top" type="Sprite" parent="Sprite"]
+texture = ExtResource( 5 )
 centered = false
 
 [node name="Image" type="Sprite" parent="Sprite"]
@@ -60,6 +75,22 @@ bbcode_enabled = true
 visible = false
 texture = ExtResource( 2 )
 centered = false
+
+[node name="Price" type="Label" parent="Sprite"]
+visible = false
+anchor_right = 1.0
+margin_top = -24.0
+margin_right = -6.0
+margin_bottom = 25.0
+rect_min_size = Vector2( 152, 0 )
+size_flags_vertical = 1
+custom_colors/font_color = Color( 0, 1, 0.133333, 1 )
+custom_fonts/font = SubResource( 1 )
+text = "$0"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Tween" type="Tween" parent="."]
 

@@ -5,14 +5,12 @@ var particles_cache = {}
 var item_data
 var unit_data
 var card_data
-var level_data
 var dialog_data
 
 func _init():
 	item_data = get_json_from_dir("res://assets/json/items.json")
 	unit_data = get_json_from_dir("res://assets/json/units.json")
 	card_data = get_json_from_dir("res://assets/json/cards.json")
-	level_data = get_json_from_dir("res://assets/json/levels.json")
 	dialog_data = get_json_from_dir("res://assets/json/dialog.json")
 
 func get_combo(dat):
@@ -29,20 +27,28 @@ func get_random_units(p):
 	var r = []
 	var keys = unit_data.keys()
 	keys.shuffle()
-	for i in range(p):
+	var count = 0
+	var i = 0
+	while count < p:
 		var key = keys[i % keys.size()]
 		if unit_data[key].get("selectable", true) == true:
 			r.append(key)
+			count += 1
+		i += 1
 	return r
 
 func get_random_cards(p):
 	var r = []
 	var keys = card_data.keys()
 	keys.shuffle()
-	for i in range(p):
-		var key = keys[i]
+	var count = 0
+	var i = 0
+	while count < p:
+		var key = keys[i % keys.size()]
 		if card_data[key].get("selectable", true) == true:
 			r.append(key)
+			count += 1
+		i += 1
 	return r
 
 func get_image(p):

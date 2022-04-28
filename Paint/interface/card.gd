@@ -1,15 +1,17 @@
 extends Control
 
-onready var tween = $Tween
+const IDLE = 0
+const ANIMATION = 1
 var orig_pos
 var orig_rot
 var dat
 var item_name
+var state = IDLE
 var mouse_over = false
 var text
-
-func _ready():
-	remember()
+var price = 0
+var selected = false
+var holder
 
 func set_card(p):
 	$Sprite.texture = p
@@ -23,7 +25,17 @@ func set_title(p):
 
 func set_text(p):
 	text = p
-	$Sprite/Scroll/Description.set_bbcode(p)
+	var r = G.replace_vars(p, funcref(self, "replace_texts"))
+	$Sprite/Scroll/Description.set_bbcode(r)
+
+func set_price(prefix, p=-1):
+	if p == -1:
+		var rank = 5 << int(dat.g("rank", 1))
+		price = R.ir(rank, rank*2)
+	else:
+		price = p
+	$Sprite/Price.set_text(prefix+str(price))
+	$Sprite/Price.show()
 
 func on_draw():
 	pass
@@ -44,17 +56,17 @@ func gfx(p):
 	add_child(fx)
 
 func _on_mouse_entered():
-	if !mouse_over:
+	if state == IDLE and !mouse_over:
 		mouse_over = true
-		tween.interpolate_property(self, "rect_scale",
+		$Tween.interpolate_property(self, "rect_scale",
 			Vector2(1, 1), Vector2(1.2, 1.2), .5,
 			Tween.TRANS_ELASTIC, Tween.EASE_OUT)
-		tween.start()
+		$Tween.start()
 		$Sprite.z_index = 2
 
 func _on_mouse_exited():
-	if mouse_over:
-		tween.stop_all()
+	if state == IDLE and mouse_over:
+		$Tween.stop_all()
 		mouse_over = false
 		rect_scale = Vector2(1, 1)
 		G.ui.description.hide()
@@ -68,24 +80,38 @@ func _on_gui_input(event):
 			else:
 				G.ui.describe("card", item_name)
 
-func toggle_selection():
-	if dat.g("select", false) == true:
-		on_deselected()
-	else:
-		on_selected()
-
 func on_selected():
-	tween.interpolate_property(self, "rect_rotation",
+	$Tween.interpolate_property(self, "rect_rotation",
 		0, 15, 1,
 		Tween.TRANS_ELASTIC, Tween.EASE_OUT)
-	tween.start()
+	$Tween.start()
 	$Sprite/Selection.show()
-	dat.a("select", true)
+	selected = true
 
 func on_deselected():
-	tween.interpolate_property(self, "rect_rotation",
+	$Tween.interpolate_property(self, "rect_rotation",
 		15, 0, 1,
 		Tween.TRANS_ELASTIC, Tween.EASE_OUT)
-	tween.start()
+	$Tween.start()
 	$Sprite/Selection.hide()
-	dat.a("select", false)
+	selected = false
+
+func replace_texts(v):
+	var r
+	var split = v.split(":")
+	if split[0] == "burn":
+		r = texttype(split[1],"red")
+	elif split[0] == "bash" or split[0] == "cut":
+		r = texttype(split[1],"red","attack")
+	elif split[0] == "block":
+		r = texttype(split[1],"gray","defense")
+	elif split[0] == "heal":
+		r = texttype(split[1],"green")
+	return r
+
+func texttype(v,color,q=null,mod=1):
+	if holder == null:
+		return "[color="+color+"]"+v+"[/color]"
+	else:
+		var t = str(int(v) + holder.get(q)*mod)
+		return "[color="+color+"]"+t+"[/color]"

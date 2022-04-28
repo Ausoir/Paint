@@ -5,6 +5,7 @@ onready var menu = $Control/Menu
 onready var dialog = $Control/Dialog
 onready var tint = $Control/Tint
 onready var description = $Control/Description
+onready var money = $Control/Money
 var screen_size
 var screen_ratio
 var mouse_pos = Vector2()
@@ -53,13 +54,23 @@ func display_battle(arg):
 		clear()
 	on = true
 	tint.show()
-	arg.is_engaged = true
 	if battle == null:
+		arg.is_engaged = true
 		battle = Battle.instance()
 		$Control.add_child_below_node(menu, battle)
 		battle.add_enemy(arg)
-	elif battle.state == 0:
-		battle.add_enemy(arg)
+	elif battle.state == battle.MAIN:
+		if battle.enemies.size() < 3:
+			arg.is_engaged = true
+			battle.add_enemy(arg)
+		else:
+			clear()
+
+func toggle_options(p):
+	if p:
+		$Control/Options.show()
+	else:
+		$Control/Options.hide()
 
 func clear():
 	if battle == null:

@@ -4,8 +4,6 @@ const W = 32
 const H = 32
 const HW = 16
 const HH = 16
-const OCTANT_FLIP = [[1, 0, 0, 1], [0, 1, 1, 0], [0, -1, 1, 0], [-1, 0, 0, 1], \
-	[-1, 0, 0, -1], [0, -1, -1, 0], [0, 1, -1, 0], [1, 0, 0, -1]]
 const CARDINALS = [[0,-1],[1,0],[0,1],[-1,0]]
 const DIRS = [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]
 const UP = 0
@@ -57,100 +55,40 @@ func pixel_to_pos(pos):
 func pos_to_pixel(pos):
 	return Vector2(pos.x*W+HW, pos.y*H+HH)
 
-func vector_to_dir(x, y):
-	var count = 0
-	for i in DIRS:
-		if i[0] == x and i[1] == y:
-			return count
-		count += 1
-	return -1
-
-func get_autotile_coord(dirs):
-	var v
-	if dirs.empty():
-		v = Vector2()
-	else:
-		if dirs == [0]:
-			v = Vector2(0, 3)
-		elif dirs == [1]:
-			v = Vector2(1, 0)
-		elif dirs == [2]:
-			v = Vector2(0, 1)
-		elif dirs == [3]:
-			v = Vector2(3, 0)
-		elif dirs == [0, 1]:
-			v = Vector2(1, 3)
-		elif dirs == [0, 2]:
-			v = Vector2(0, 2)
-		elif dirs == [0, 3]:
-			v = Vector2(3, 3)
-		elif dirs == [1, 2]:
-			v = Vector2(1, 1)
-		elif dirs == [1, 3]:
-			v = Vector2(2, 0)
-		elif dirs == [2, 3]:
-			v = Vector2(3, 1)
-		elif dirs == [0, 1, 2]:
-			v = Vector2(1, 2)
-		elif dirs == [0, 1, 3]:
-			v = Vector2(2, 3)
-		elif dirs == [0, 2, 3]:
-			v = Vector2(3, 2)
-		elif dirs == [1, 2, 3]:
-			v = Vector2(2, 1)
-		elif dirs == [0, 1, 2, 3]:
-			v = Vector2(2, 2)
-		else:
-			v = Vector2()
-	return v
-
-func get_direction_between(from, to):
-	var tx = from.x - to.x
-	var ty = from.y - to.y
-	if tx == 0 and ty == 0:
-		return -1
-	var dir
-	var angle = atan2(ty, tx) + PI
-	var octant = int(angle / .3927)
-	if octant == 15 or octant == 0:
-		dir = LEFT
-	elif octant == 1 or octant == 2:
-		dir = UPLEFT
-	elif octant == 3 or octant == 4:
-		dir = UP
-	elif octant == 5 or octant == 6:
-		dir = UPRIGHT
-	elif octant == 7 or octant == 8:
-		dir = RIGHT
-	elif octant == 9 or octant == 10:
-		dir = DOWNRIGHT
-	elif octant == 11 or octant == 12:
-		dir = DOWN
-	elif octant == 13 or octant == 14:
-		dir = DOWNLEFT
-	return dir
-
-func is_vec_in_range(pos):
-	var dist = pos - you.n_camera.position
-	var length = max(abs(dist.x), abs(dist.y))
-	return length/H < you.n_camera.sight_range
-
-func is_vec_visible(p):
-	var pos = pixel_to_pos(p)
-	var tile = world.get_tile(pos.x, pos.y)
-	return tile != null and tile.visible
-
 func display_damage(val, pos, color=Color.white, _scale=1, _speed=800, lifetime=100):
-	if is_vec_visible(pos):
-		var r = Damage_Label.instance()
-		r.lifetime = lifetime
-		r.rect_position = pos
-		r.rect_position.y -= HH
-		world.others.add_child(r)
-		r.set_damage(str(val), color, _scale, _speed)
+	var r = Damage_Label.instance()
+	r.lifetime = lifetime
+	r.rect_position = pos
+	r.rect_position.y -= HH
+	world.others.add_child(r)
+	r.set_damage(str(val), color, _scale, _speed)
 
 func cmds(p, host=null, tgt=null):
 	return command.run(p, host, tgt)
+
+func replace_vars(arg, fn):
+	var last = arg.find("}")
+	if last != -1:
+		var r = ""
+		var v = ""
+		var on = false
+		var once = last == len(arg) - 1 and arg[0] == "{"
+		for i in arg:
+			if i == "{":
+				on = true
+			elif i == "}":
+				var t = fn.call_func(v)
+				if once:
+					return t
+				r += str(t)
+				v = ""
+				on = false
+			elif on:
+				v += i
+			else:
+				r += i
+		return r
+	return arg
 
 func travel(_map):
 	world.create(_map)
@@ -188,6 +126,7 @@ func load_game():
 		node_data = parse_json(save_game.get_line())
 	you = Player.instance()
 	vars = node_data
+	G.ui.money.display(0)
 	R.set_seed(vars.seed)
 	travel(node_data.map)
 	while save_game.get_position() < save_game.get_len():

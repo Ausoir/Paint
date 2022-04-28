@@ -17,11 +17,13 @@ onready var items = $Items
 onready var players = $Players
 onready var others = $Others
 var map_name: String
+var spawn_points
+var units = []
 
 func create(_map_name):
 	map_name = _map_name
-	G.vars["shop"] = G.data.get_random_cards(6)
-	G.vars["mobs"] = G.data.get_random_units(36)
+	G.vars["shop"] = G.data.get_random_cards(3)
+	G.vars["mobs"] = G.data.get_random_units(12)
 	var level = levels.get_node(_map_name)
 	var level_background = level.get_child(0)
 	image.set_texture(level_background.texture)
@@ -29,7 +31,7 @@ func create(_map_name):
 	width = bounds.x / G.W
 	height = bounds.y / G.H
 	tiles = []
-	var spawns = []
+	spawn_points = []
 	var ids = {}
 	for i in range(tileset.get_last_unused_tile_id()):
 		ids[i] = tileset.tile_get_name(i)
@@ -40,56 +42,25 @@ func create(_map_name):
 			var t = level.get_cell(x, y)
 			if t > 3:
 				if ids[t] == "enemy":
-					spawns.append(tile)
+					spawn_points.append(tile)
 			elif t > 0:
 				G.cmds([["make",ids[t],tile]])
 			row.append(tile)
 		tiles.append(row)
-	for y in range(height):
-		for x in range(width):
-			apply_autotile(x, y)
 
-func spawn(spawns):
-	var ordered = []
-	var ordered2 = []
-	for tile in spawns:
-		var dist = tile.x + tile.y
-		var added = false
-		for i in range(ordered.size()):
-			if dist < ordered[i].x + ordered[i].y:
-				ordered.insert(i, tile)
-				ordered2.insert(i, dist)
-				added = true
-				break
-		if !added:
-			ordered.append(tile)
-			ordered2.append(dist)
-	var list = G.data.level_data.get(map_name)
-	var third = ordered.size() / 3
-	for i in range(ordered.size()):
-		var unit
-		if i < third:
-			unit = G.data.get_combo(list[0])
-		elif i < third * 2:
-			unit = G.data.get_combo(list[1])
-		else:
-			unit = G.data.get_combo(list[2])
-		if !unit.empty():
-			G.cmds([["make", unit[0], ordered[i]]])
+func spawn(p):
+	for i in p.size():
+		var tile = spawn_points[i % spawn_points.size()]
+		var unit = G.cmds([["make", p[i], tile]])
+		unit.controller.target = G.you.unit
+		units.append(unit)
 
-func apply_autotile(x, y):
-	var pos = tiles[y][x]
-	if pos.autotile == 1:
-		var dirs = []
-		for i in range(4):
-			var adj = pos.get_adjacent(i * 2)
-			if adj.height == pos.height:
-				dirs.append(i)
-		var v = G.get_autotile_coord(dirs)
-		var tileid = tilemap.get_cell(x, y)
-		tilemap.set_cell(x, y, tileid, false, false, false, v)
-	for item in pos.items:
-		item.autotilize()
+func get_units():
+	var r = []
+	for i in units:
+		if i != null and is_instance_valid(i):
+			r.append(i)
+	return r
 
 func get_tile(x, y):
 	if is_inbound(x, y):

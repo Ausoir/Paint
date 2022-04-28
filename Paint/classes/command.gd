@@ -16,38 +16,16 @@ func run(args, host, ptgt):
 			tgt = run_command(arg, host)
 	return tgt
 
-func replace_dats(host, arg):
-	var last = arg.find("}")
-	if last != -1:
-		var r = ""
-		var v = ""
-		var on = false
-		var once = last == len(arg) - 1 and arg[0] == "{"
-		for i in arg:
-			if i == "{":
-				on = true
-			elif i == "}":
-				var t
-				if "~" in v:
-					var split = v.split("~")
-					t = R.ir(int(split[0]), int(split[1]))
-				elif "," in v:
-					t = R.r_arr(v.split(","))
-				elif v == "t":
-					t = tgt
-				else:
-					t = host.dat.g(v,"")
-				if once:
-					return t
-				r += str(t)
-				v = ""
-				on = false
-			elif on:
-				v += i
-			else:
-				r += i
-		return r
-	return arg
+func replace_dats(v):
+	var t
+	if "~" in v:
+		var split = v.split("~")
+		t = R.ir(int(split[0]), int(split[1]))
+	elif "," in v:
+		t = R.r_arr(v.split(","))
+	elif v == "t":
+		t = tgt
+	return t
 
 func replace_vars(host, _args):
 	var r = []
@@ -89,7 +67,7 @@ func replace_vars(host, _args):
 						r.append(unit)
 					continue
 				else:
-					arg = replace_dats(host, arg)
+					arg = G.replace_vars(arg, funcref(self, "replace_dats"))
 		r.append(arg)
 	return r
 
@@ -121,8 +99,6 @@ func run_command(p, host):
 		return run_operation(command, args, G.vars, tgt)
 	elif command[0] == "&":
 		return run_operation(command, args, G.temp, tgt)
-	elif command == "onstop":
-		onstop = args[1]
 	elif command == "make":
 		tgt = G.factory.make_item(args[1], args[2])
 		if tgt == null:
@@ -152,7 +128,16 @@ func run_command(p, host):
 		elif args[1] == "particle":
 			G.make_particle(args[2], args[3])
 	elif command == "sfx":
-		G.sfx.play(args[1], args[2])
+		G.sfx.play(args[1])
+	elif command == "buy":
+		if G.vars.money >= args[1]:
+			G.vars.money -= args[1]
+			G.ui.money.display(-args[1])
+			G.sfx.play("buy")
+			return true
+		else:
+			G.sfx.play("fail")
+			return false
 	elif command == "fade":
 		G.ui.fadein()
 	elif command == "cast":

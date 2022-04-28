@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://interface/interface.gd" type="Script" id=1]
 [ext_resource path="res://assets/theme.tres" type="Theme" id=2]
 [ext_resource path="res://interface/Description.tscn" type="PackedScene" id=3]
 [ext_resource path="res://interface/Menu.tscn" type="PackedScene" id=4]
 [ext_resource path="res://assets/FingerPaint-Regular.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://interface/money.gd" type="Script" id=6]
 [ext_resource path="res://interface/dialog.gd" type="Script" id=22]
 
 [sub_resource type="Animation" id=1]
@@ -32,6 +33,15 @@ font_data = ExtResource( 5 )
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 0.705882 )
 
+[sub_resource type="DynamicFont" id=4]
+size = 48
+outline_size = 4
+outline_color = Color( 0.101961, 1, 0, 0.470588 )
+use_mipmaps = true
+use_filter = true
+extra_spacing_char = -2
+font_data = ExtResource( 5 )
+
 [node name="Control" type="CanvasLayer"]
 script = ExtResource( 1 )
 
@@ -52,7 +62,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
+[node name="Options" type="HBoxContainer" parent="Control"]
 margin_top = 704.0
 margin_right = 1280.0
 margin_bottom = 768.0
@@ -62,7 +72,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button" type="Button" parent="Control/HBoxContainer"]
+[node name="Button" type="Button" parent="Control/Options"]
 margin_right = 424.0
 margin_bottom = 64.0
 size_flags_horizontal = 3
@@ -70,7 +80,7 @@ size_flags_vertical = 3
 custom_fonts/font = SubResource( 3 )
 text = "Deck"
 
-[node name="Button2" type="Button" parent="Control/HBoxContainer"]
+[node name="Button2" type="Button" parent="Control/Options"]
 margin_left = 428.0
 margin_right = 852.0
 margin_bottom = 64.0
@@ -82,7 +92,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Button3" type="Button" parent="Control/HBoxContainer"]
+[node name="Button3" type="Button" parent="Control/Options"]
 margin_left = 856.0
 margin_right = 1280.0
 margin_bottom = 64.0
@@ -142,9 +152,23 @@ text = "Stuff"
 visible = false
 margin_right = 64.0
 
-[connection signal="pressed" from="Control/HBoxContainer/Button" to="." method="display_menu" binds= [ "deck" ]]
-[connection signal="pressed" from="Control/HBoxContainer/Button2" to="." method="display_menu" binds= [ "shop" ]]
-[connection signal="pressed" from="Control/HBoxContainer/Button3" to="." method="display_menu" binds= [ "fight" ]]
+[node name="Money" type="Label" parent="Control"]
+anchor_top = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 1264, 64 )
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 0, 1, 0.133333, 1 )
+custom_fonts/font = SubResource( 4 )
+text = "$0"
+align = 2
+script = ExtResource( 6 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[connection signal="pressed" from="Control/Options/Button" to="." method="display_menu" binds= [ "deck" ]]
+[connection signal="pressed" from="Control/Options/Button2" to="." method="display_menu" binds= [ "shop" ]]
+[connection signal="pressed" from="Control/Options/Button3" to="." method="display_menu" binds= [ "fight" ]]
 [connection signal="gui_input" from="Control/Tint" to="." method="_on_background_input"]
 [connection signal="meta_clicked" from="Control/Dialog/Dialog/RichTextLabel" to="Control/Dialog" method="_on_meta_clicked"]
 [connection signal="meta_hover_ended" from="Control/Dialog/Dialog/RichTextLabel" to="Control/Dialog" method="_on_meta_hover_ended"]

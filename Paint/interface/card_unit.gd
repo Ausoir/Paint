@@ -1,5 +1,6 @@
 extends "res://interface/card.gd"
 
+const DEATH = 4
 var health = 1
 var block = 0
 var attack = 0
@@ -9,6 +10,10 @@ var deck
 var unit
 var next
 var last
+
+func set_script(p):
+	.set_script(p)
+	var _a = connect("tween_all_completed", self, "on_tween_all_completed")
 
 func on_draw():
 	pass
@@ -41,6 +46,7 @@ func set_next(p=null):
 			set_deck(unit.dat.g("deck"))
 		p = G.factory.make_card(null, deck.pop_front())
 	next = p
+	next.holder = self
 	next.rect_position.x = 160
 	next.set_rotation_degrees(5)
 	next.rect_pivot_offset.y = 240
@@ -55,7 +61,7 @@ func damage(type, p, hitter):
 	elif type == "cut":
 		if block > 0:
 			dmg = 0
-	health -= dmg
+	health = int(min(health - dmg, dat.g("vitality", 1)))
 	if health <= 0:
 		if hitter != null:
 			G.bcommand.run(hitter.last.dat.g("onkill"), hitter, self)
@@ -63,4 +69,14 @@ func damage(type, p, hitter):
 	set_text(text)
 
 func die():
-	queue_free()
+	$Tween.interpolate_property(self, "modulate",
+		Color(1,1,1,1), Color(1,1,1,0), .4,
+		Tween.TRANS_EXPO, Tween.EASE_OUT)
+	$Tween.start()
+	unit.die()
+	state = DEATH
+
+func _on_tween_all_completed():
+	if state == DEATH:
+		battle.n_enemy.remove_child(self)
+		queue_free()
